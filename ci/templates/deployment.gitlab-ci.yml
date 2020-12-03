@@ -1,0 +1,122 @@
+# validate:
+#   stage: validate
+#   script:
+#     - gitlab-terraform validate
+stages:
+  - prepare
+  - deploy
+  - cleanup
+
+.terraform-base:
+  image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+  # cache:
+  #   key: default
+  #   paths:
+  #     - ${TF_ROOT}/.terraform
+  variables:
+    TF_ROOT: ${CI_PROJECT_DIR}/deployment
+    TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_ENVIRONMENT_SLUG}
+    TF_IN_AUTOMATION: "true"
+  resource_group: ${CI_ENVIRONMENT_SLUG}
+  interruptible: false
+  before_script:
+    - git config --global credential.helper store
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com" > ~/.git-credentials
+    - cd ${TF_ROOT}
+    - export TF_VAR_kube_namespace=${KUBE_NAMESPACE}
+    - export TF_VAR_ci_deploy_user=${CI_DEPLOY_USER}
+    - export TF_VAR_ci_deploy_password=${CI_DEPLOY_PASSWORD}
+    - export TF_VAR_ci_image=${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
+    - export TF_VAR_ci_project_id=${CI_PROJECT_ID}
+    - export TF_VAR_ci_project_name=${CI_PROJECT_NAME}
+    - export TF_VAR_ci_environment_slug=${CI_ENVIRONMENT_SLUG}
+    - export TF_VAR_ci_environment_name=${CI_ENVIRONMENT_NAME}
+    - export TF_VAR_ci_environment_url=${CI_ENVIRONMENT_URL}
+    - env
+    # - env | sed -re 's/(.+)=(.*)/\L\1=\2/g' > variables.tfvars
+    # - cat variables.tfvars
+
+# plan does not receive KUBE_NAMESPACE until the deployment job is completed
+# plan:
+#   extends:
+#     - .terraform-base
+#   stage: predeploy
+#   environment:
+#     name: $ENVIRONMENT_NAME
+#     url: https://${ENVIRONMENT_SUBDOMAIN}.${KUBE_INGRESS_BASE_DOMAIN}
+#     action: prepare
+#   rules:
+#     - if: $ENVIRONMENT_NAME
+#       when: on_success
+#     - when: never
+#   script:
+#     - env
+#     - gitlab-terraform init
+#     - gitlab-terraform plan
+#     - gitlab-terraform plan-json
+#   artifacts:
+#     name: plan
+#     paths:
+#       - ${TF_ROOT}/plan.cache
+#     reports:
+#       terraform: ${TF_ROOT}/plan.json
+
+tf-variables:
+  image: node:lts-alpine
+  stage: prepare
+  script:
+    - echo 'console.log("TF_DEPLOY_VARIABLES="+JSON.stringify({gitlab:{deploy_user:process.env.CI_DEPLOY_USER,deploy_password:process.env.CI_DEPLOY_PASSWORD,secrets:Object.keys(process.env).filter(key => key.indexOf("K8S_SECRET_")===0).reduce((obj,key)=>{obj[key.replace("K8S_SECRET_","")]=process.env[key];return obj},{})}}))' | node > tf.env
+  environment:
+    name: $ENVIRONMENT_NAME
+    url: https://${ENVIRONMENT_SUBDOMAIN}.${KUBE_INGRESS_BASE_DOMAIN}
+    action: prepare
+  artifacts:
+    reports:
+      dotenv: tf.env
+  # artifacts:
+  #   name: plan
+  #   paths:
+  #     - ${TF_ROOT}/plan.cache
+  #   reports:
+  #     terraform: ${TF_ROOT}/plan.json
+
+deploy:
+  extends:
+    - .terraform-base
+  stage: deploy
+  dependencies:
+    - tf-variables
+  environment:
+    name: $ENVIRONMENT_NAME
+    url: https://${ENVIRONMENT_SUBDOMAIN}.${KUBE_INGRESS_BASE_DOMAIN}
+    on_stop: stop
+  rules:
+    - if: $ENVIRONMENT_NAME
+      when: on_success
+    - when: never
+  script:
+    - env
+    - echo $TF_DEPLOY_VARIABLES > terraform.tfvars.json
+    - gitlab-terraform init
+    - gitlab-terraform plan
+    - gitlab-terraform apply
+
+stop:
+  extends:
+    - .terraform-base
+  stage: cleanup
+  variables:
+    GIT_STRATEGY: none
+  allow_failure: true
+  needs:
+    - deploy
+  environment:
+    name: $ENVIRONMENT_NAME
+    action: stop
+  rules:
+    - if: $ENVIRONMENT_NAME
+      when: manual
+    - when: never
+  script:
+    - gitlab-terraform init
+    - gitlab-terraform destroy

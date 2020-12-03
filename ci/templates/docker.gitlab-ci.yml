@@ -1,0 +1,17 @@
+.docker:build-sha:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - apk add --update jq curl
+    - |
+      function docker_login() {
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+      }
+      function docker_tag_exists() {
+        TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'${CI_REGISTRY_USER}'", "password": "'${CI_REGISTRY_PASSWORD}'"}' https://${CI_REGISTRY}/v2/users/login/ | jq -r .token)
+        curl --silent -f --head -lL https://${CI_REGISTRY}/v2/repositories/${CI_PROJECT_PATH}/tags/${CI_COMMIT_SHORT_SHA}/ > /dev/null
+      }
+  script:
+    - export DOCKER_IMAGE=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker_tag_exists || docker_login && docker build --pull -t "$DOCKER_IMAGE" . && docker push "$DOCKER_IMAGE"
