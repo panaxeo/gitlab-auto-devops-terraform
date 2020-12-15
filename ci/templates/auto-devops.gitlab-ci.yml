@@ -33,6 +33,7 @@ deploy:production:
   trigger:
     include:
       - project: panaxeo-public/gitlab-auto-devops-terraform
+        ref: $CI_COMMIT_REF_NAME
         file: /ci/templates/deployment.gitlab-ci.yml
     strategy: depend
   rules:

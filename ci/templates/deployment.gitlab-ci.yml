@@ -65,7 +65,7 @@ tf-variables:
   image: node:lts-alpine
   stage: prepare
   script:
-    - echo 'console.log("TF_DEPLOY_VARIABLES="+JSON.stringify({gitlab:{deploy_user:process.env.CI_DEPLOY_USER,deploy_password:process.env.CI_DEPLOY_PASSWORD,secrets:Object.keys(process.env).filter(key => key.indexOf("K8S_SECRET_")===0).reduce((obj,key)=>{obj[key.replace("K8S_SECRET_","")]=process.env[key];return obj},{})}}))' | node > tf.env
+    - echo 'console.log("TF_DEPLOY_VARIABLES="+JSON.stringify({gitlab:{secrets:Object.keys(process.env).filter(key => key.indexOf("K8S_SECRET_")===0).reduce((obj,key)=>{obj[key.replace("K8S_SECRET_","")]=process.env[key];return obj},{}),...Object.keys(process.env).filter(key => key.indexOf("CI_")===0 || key.indexOf("KUBE_")===0).reduce((obj,key)=>{obj[key.toLowerCase()]=process.env[key];return obj},{})}}))' | node > tf.env
   environment:
     name: $ENVIRONMENT_NAME
     url: https://${ENVIRONMENT_SUBDOMAIN}.${KUBE_INGRESS_BASE_DOMAIN}
@@ -96,6 +96,7 @@ deploy:
     - when: never
   script:
     - env
+    - echo $TF_DEPLOY_VARIABLES # testing purposes
     - echo $TF_DEPLOY_VARIABLES > terraform.tfvars.json
     - gitlab-terraform init
     - gitlab-terraform plan

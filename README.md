@@ -2,6 +2,61 @@
 
 Gitlab Auto DevOps using Terraform
 
+# Getting started
+
+1. create gitlab project
+1. create deploy token with name `gitlab-deploy-token` and read registry permissions
+1. push `.gitlab-ci.yml` file with content
+1. when `Dockerfile` is created the autodevops pipeline will create `docker:build` job which will build docker image and push it to gitlab registry
+1. by creating `deployment` folder with terraform files the autodevops pipeline will trigger deployment
+
+## Docker builds
+
+`.gitlab-ci.yml` file with content:
+
+```
+include:
+  - project: "panaxeo-public/gitlab-auto-devops-terraform"
+    file: "/ci/templates/auto-devops.gitlab-ci.yml"
+```
+
+## Terraform deployments
+
+Create `deployment/base.tf` file with following content:
+
+```
+terraform {
+  backend "http" {}
+  required_version = ">= 0.13"
+}
+
+provider "kubernetes" {}
+
+variable "kube_namespace" {}
+variable "ci_project_name" {}
+variable "ci_environment_url" {}
+variable "ci_environment_name" {}
+variable "ci_image" {}
+variable "gitlab" {}
+
+module "gitlab-secret" {
+  source    = "git::https://github.com/panaxeo/gitlab-auto-devops-terraform//terraform/gitlab-registry-k8s-secret"
+  namespace = var.kube_namespace
+  gitlab    = var.gitlab
+}
+```
+
+to deploy application to kubernetes cluster, create another terraform file (eg `main.tf`) with content:
+
+```
+module "k8s-app" {
+  source          = "git::https://github.com/panaxeo/gitlab-auto-devops-terraform//terraform/gitlab-k8s-stack"
+  namespace       = var.kube_namespace
+  name            = var.ci_project_name
+  container_image = var.ci_image
+}
+```
+
 ## Unlocking gitlab managed terraform state
 
 ```
