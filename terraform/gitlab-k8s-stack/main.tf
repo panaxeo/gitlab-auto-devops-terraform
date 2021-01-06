@@ -6,7 +6,7 @@ resource "kubernetes_service" "main" {
 
   spec {
     selector = {
-      name      = var.gitlab.ci_project_name
+      name      = local.name
       namespace = var.gitlab.kube_namespace
     }
 
