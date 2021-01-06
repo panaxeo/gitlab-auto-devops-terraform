@@ -1,4 +1,3 @@
-variable "name" {}
 variable "container_name" {
   default = "main"
 }
@@ -6,7 +5,6 @@ variable "container_image" {}
 variable "container_port" {
   default = 80
 }
-variable "namespace" {}
 variable "hostname" {
   type    = string
   default = null

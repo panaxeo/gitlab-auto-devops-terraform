@@ -1,8 +1,8 @@
 resource "kubernetes_ingress" "main" {
   count = var.hostname != null ? 1 : 0
   metadata {
-    name      = var.name
-    namespace = var.namespace
+    name      = var.gitlab.ci_project_name
+    namespace = var.gitlab.kube_namespace
 
     annotations = {
       #   "nginx.ingress.kubernetes.io/rewrite-target" = "/"  #   "nginx.ingress.kubernetes.io/add-base-url"   = true
@@ -18,7 +18,7 @@ resource "kubernetes_ingress" "main" {
   }
 
   spec {
-    # backend {  #   service_name = "${var.name}-reporting"  #   service_port = 80  # }
+    # backend {  #   service_name = "${var.gitlab.ci_project_name}-reporting"  #   service_port = 80  # }
     rule {
       host = var.hostname
 
@@ -38,7 +38,7 @@ resource "kubernetes_ingress" "main" {
       hosts = [
         var.hostname
       ]
-      secret_name = "${var.name}-cert"
+      secret_name = "${var.gitlab.ci_project_name}-cert"
     }
   }
 }
