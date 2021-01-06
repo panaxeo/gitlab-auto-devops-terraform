@@ -1,6 +1,6 @@
 resource "kubernetes_service" "main" {
   metadata {
-    name      = local.service_name
+    name      = local.name
     namespace = var.gitlab.kube_namespace
   }
 
