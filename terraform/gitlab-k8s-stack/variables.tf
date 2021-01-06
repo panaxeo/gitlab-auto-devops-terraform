@@ -1,8 +1,10 @@
 variable "gitlab" {
   type = object({
-    secrets         = map(string)
-    ci_project_name = string
-    kube_namespace  = string
+    secrets              = map(string)
+    ci_project_name      = string
+    ci_project_path_slug = string
+    ci_environment_slug  = string
+    kube_namespace       = string
   })
 }
 

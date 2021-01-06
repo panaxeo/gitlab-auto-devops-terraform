@@ -21,6 +21,10 @@ resource "kubernetes_deployment" "main" {
   metadata {
     name      = var.gitlab.ci_project_name
     namespace = var.gitlab.kube_namespace
+    annotations = {
+      "app.gitlab.com/app" = var.gitlab.ci_project_path_slug
+      "app.gitlab.com/env" = var.gitlab.ci_environment_slug
+    }
   }
 
   wait_for_rollout = true
@@ -38,6 +42,10 @@ resource "kubernetes_deployment" "main" {
         labels = {
           name      = var.gitlab.ci_project_name
           namespace = var.gitlab.kube_namespace
+        }
+        annotations = {
+          "app.gitlab.com/app" = var.gitlab.ci_project_path_slug
+          "app.gitlab.com/env" = var.gitlab.ci_environment_slug
         }
       }
 
