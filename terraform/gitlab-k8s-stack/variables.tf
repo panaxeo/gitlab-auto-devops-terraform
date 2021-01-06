@@ -1,3 +1,11 @@
+variable "gitlab" {
+  type = object({
+    secrets         = map(string)
+    ci_project_name = string
+    kube_namespace  = string
+  })
+}
+
 variable "container_name" {
   default = "main"
 }
