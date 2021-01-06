@@ -32,16 +32,10 @@ terraform {
 
 provider "kubernetes" {}
 
-variable "kube_namespace" {}
-variable "ci_project_name" {}
-variable "ci_environment_url" {}
-variable "ci_environment_name" {}
-variable "ci_image" {}
 variable "gitlab" {}
 
 module "gitlab-secret" {
   source    = "git::https://github.com/panaxeo/gitlab-auto-devops-terraform//terraform/gitlab-registry-k8s-secret"
-  namespace = var.kube_namespace
   gitlab    = var.gitlab
 }
 ```
@@ -51,8 +45,7 @@ to deploy application to kubernetes cluster, create another terraform file (eg `
 ```
 module "k8s-app" {
   source          = "git::https://github.com/panaxeo/gitlab-auto-devops-terraform//terraform/gitlab-k8s-stack"
-  namespace       = var.kube_namespace
-  name            = var.ci_project_name
+  name            = "ma-app" # optional, defaults to var.gitlab.ci_project_name
   container_image = var.ci_image
 }
 ```
