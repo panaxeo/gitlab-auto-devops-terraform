@@ -19,7 +19,7 @@ resource "kubernetes_service" "main" {
 
 resource "kubernetes_deployment" "main" {
   metadata {
-    name      = var.gitlab.ci_project_name
+    name      = local.name
     namespace = var.gitlab.kube_namespace
     annotations = {
       "app.gitlab.com/app" = var.gitlab.ci_project_path_slug
@@ -32,7 +32,7 @@ resource "kubernetes_deployment" "main" {
   spec {
     selector {
       match_labels = {
-        name      = var.gitlab.ci_project_name
+        name      = local.name
         namespace = var.gitlab.kube_namespace
       }
     }
@@ -40,7 +40,7 @@ resource "kubernetes_deployment" "main" {
     template {
       metadata {
         labels = {
-          name      = var.gitlab.ci_project_name
+          name      = local.name
           namespace = var.gitlab.kube_namespace
         }
         annotations = {

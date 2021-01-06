@@ -8,6 +8,13 @@ variable "gitlab" {
   })
 }
 
+variable "name" {
+  default = ""
+}
+variable "namespace" {
+  default = ""
+}
+
 variable "container_name" {
   default = "main"
 }
