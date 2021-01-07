@@ -30,6 +30,7 @@ deploy:production:
     ENVIRONMENT_NAME: production
     ENVIRONMENT_SUBDOMAIN: ${CI_PROJECT_NAME}
     # KUBE_INGRESS_BASE_DOMAIN: example.com
+  interruptible: false
   trigger:
     include:
       - project: panaxeo-public/gitlab-auto-devops-terraform
@@ -51,6 +52,7 @@ deploy:development:
     ENVIRONMENT_NAME: development
     ENVIRONMENT_SUBDOMAIN: ${CI_PROJECT_NAME}.dev
     # KUBE_INGRESS_BASE_DOMAIN: example.com
+  interruptible: false
   trigger:
     include:
       - project: panaxeo-public/gitlab-auto-devops-terraform
