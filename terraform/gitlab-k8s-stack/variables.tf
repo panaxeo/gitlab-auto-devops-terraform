@@ -1,4 +1,20 @@
-variable "name" {}
+variable "gitlab" {
+  type = object({
+    secrets              = map(string)
+    ci_project_name      = string
+    ci_project_path_slug = string
+    ci_environment_slug  = string
+    kube_namespace       = string
+  })
+}
+
+variable "name" {
+  default = ""
+}
+variable "namespace" {
+  default = ""
+}
+
 variable "container_name" {
   default = "main"
 }
@@ -6,7 +22,6 @@ variable "container_image" {}
 variable "container_port" {
   default = 80
 }
-variable "namespace" {}
 variable "hostname" {
   type    = string
   default = null

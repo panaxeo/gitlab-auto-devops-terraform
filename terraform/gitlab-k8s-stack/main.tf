@@ -1,13 +1,13 @@
 resource "kubernetes_service" "main" {
   metadata {
-    name      = local.service_name
-    namespace = var.namespace
+    name      = local.name
+    namespace = var.gitlab.kube_namespace
   }
 
   spec {
     selector = {
-      name      = var.name
-      namespace = var.namespace
+      name      = local.name
+      namespace = var.gitlab.kube_namespace
     }
 
     port {
@@ -19,8 +19,12 @@ resource "kubernetes_service" "main" {
 
 resource "kubernetes_deployment" "main" {
   metadata {
-    name      = var.name
-    namespace = var.namespace
+    name      = local.name
+    namespace = var.gitlab.kube_namespace
+    annotations = {
+      "app.gitlab.com/app" = var.gitlab.ci_project_path_slug
+      "app.gitlab.com/env" = var.gitlab.ci_environment_slug
+    }
   }
 
   wait_for_rollout = true
@@ -28,16 +32,20 @@ resource "kubernetes_deployment" "main" {
   spec {
     selector {
       match_labels = {
-        name      = var.name
-        namespace = var.namespace
+        name      = local.name
+        namespace = var.gitlab.kube_namespace
       }
     }
 
     template {
       metadata {
         labels = {
-          name      = var.name
-          namespace = var.namespace
+          name      = local.name
+          namespace = var.gitlab.kube_namespace
+        }
+        annotations = {
+          "app.gitlab.com/app" = var.gitlab.ci_project_path_slug
+          "app.gitlab.com/env" = var.gitlab.ci_environment_slug
         }
       }
 

@@ -3,9 +3,9 @@ locals {
   dockercfg = {
     auths = {
       "registry.gitlab.com" = {
-        "username" = var.gitlab.deploy_user
-        "password" = var.gitlab.deploy_password
-        "auth"     = base64encode("${var.gitlab.deploy_user}:${var.gitlab.deploy_password}")
+        "username" = var.gitlab.ci_deploy_user
+        "password" = var.gitlab.ci_deploy_password
+        "auth"     = base64encode("${var.gitlab.ci_deploy_user}:${var.gitlab.ci_deploy_password}")
       }
     }
   }
@@ -16,7 +16,7 @@ resource "kubernetes_secret" "gitlab_registry" {
 
   metadata {
     name      = local.secret_name
-    namespace = var.namespace
+    namespace = var.gitlab.kube_namespace
   }
 
   data = {
@@ -29,7 +29,7 @@ resource "kubernetes_secret" "gitlab_secrets" {
 
   metadata {
     name      = "gitlab-secrets"
-    namespace = var.namespace
+    namespace = var.gitlab.kube_namespace
   }
 
   data = var.gitlab.secrets
