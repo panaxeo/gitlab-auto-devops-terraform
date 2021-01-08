@@ -33,7 +33,6 @@ deploy:production:
   trigger:
     include:
       - project: panaxeo-public/gitlab-auto-devops-terraform
-        ref: develop
         file: /ci/templates/deployment.gitlab-ci.yml
     strategy: depend
   rules:
@@ -54,7 +53,6 @@ deploy:development:
   trigger:
     include:
       - project: panaxeo-public/gitlab-auto-devops-terraform
-        ref: develop
         file: /ci/templates/deployment.gitlab-ci.yml
     strategy: depend
   rules:
