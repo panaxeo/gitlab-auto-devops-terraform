@@ -52,7 +52,7 @@ resource "kubernetes_deployment" "main" {
       spec {
         container {
           name  = var.container_name
-          image = var.container_image
+          image = var.container_image != "" ? var.container_image : "${var.gitlab.ci_registry_image}:${var.gitlab.ci_commit_short_sha}"
 
           port {
             container_port = var.container_port

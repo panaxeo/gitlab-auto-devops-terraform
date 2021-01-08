@@ -18,7 +18,9 @@ variable "namespace" {
 variable "container_name" {
   default = "main"
 }
-variable "container_image" {}
+variable "container_image" {
+  default = ""
+}
 variable "container_port" {
   default = 80
 }
