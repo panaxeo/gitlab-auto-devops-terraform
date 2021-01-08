@@ -37,7 +37,7 @@ resource "kubernetes_ingress" "main" {
       hosts = [
         var.hostname
       ]
-      secret_name = "${var.gitlab.ci_project_name}-cert"
+      secret_name = "${local.name}-cert"
     }
   }
 }
