@@ -18,7 +18,7 @@ variable "namespace" {
 }
 
 variable "container_name" {
-  default = "main"
+  default = "auto-deploy-app"
 }
 variable "container_image" {
   default = ""
