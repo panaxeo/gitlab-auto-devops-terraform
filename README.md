@@ -7,8 +7,8 @@ Gitlab Auto DevOps using Terraform
 1. create gitlab project
 1. create deploy token with name `gitlab-deploy-token` and read registry permissions
 1. push `.gitlab-ci.yml` file with content
-1. when `Dockerfile` is created the autodevops pipeline will create `docker:build` job which will build docker image and push it to gitlab registry
-1. by creating `deployment` folder with terraform files the autodevops pipeline will trigger deployment
+1. (optional) create `Dockerfile` to enable build job which creates docker image and push image to gitlab registry
+1. create `deployment` folder to enable deployment jobs which will trigger terraform deployment. For more information see [#terraform-deployments](Terraform deployments)
 
 ## Docker builds
 
@@ -21,6 +21,8 @@ include:
 ```
 
 ## Terraform deployments
+
+To enable
 
 Create `deployment/base.tf` file with following content:
 

@@ -1,5 +1,5 @@
 resource "kubernetes_ingress" "main" {
-  count = var.hostname != null ? 1 : 0
+  count = local.hostname != null ? 1 : 0
   metadata {
     name      = local.name
     namespace = var.gitlab.kube_namespace
@@ -19,7 +19,7 @@ resource "kubernetes_ingress" "main" {
 
   spec {
     rule {
-      host = var.hostname
+      host = local.hostname
 
       http {
         path {
@@ -35,7 +35,7 @@ resource "kubernetes_ingress" "main" {
 
     tls {
       hosts = [
-        var.hostname
+        local.hostname
       ]
       secret_name = "${local.name}-cert"
     }

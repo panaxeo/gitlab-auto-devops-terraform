@@ -4,6 +4,7 @@ variable "gitlab" {
     ci_project_name      = string
     ci_project_path_slug = string
     ci_environment_slug  = string
+    ci_environment_url   = string
     ci_registry_image    = string
     ci_commit_short_sha  = string
     kube_namespace       = string
