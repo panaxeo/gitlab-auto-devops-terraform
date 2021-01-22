@@ -46,11 +46,27 @@ to deploy application to kubernetes cluster, create another terraform file (eg `
 
 ```
 module "k8s-app" {
-  source          = "git::https://github.com/panaxeo/gitlab-auto-devops-terraform//terraform/gitlab-k8s-stack"
-  name            = "ma-app" # optional, defaults to var.gitlab.ci_project_name
-  container_image = var.ci_image
+  source = "git::https://github.com/panaxeo/gitlab-auto-devops-terraform//terraform/gitlab-k8s-stack"
+  gitlab = var.gitlab
+
+  # hostname = replace(var.gitlab.ci_environment_url, "https://", "")
 }
+
 ```
+
+### Handling secrets
+
+Using K8S_SECRET prefix for environment variables. More info here:
+https://docs.gitlab.com/ee/topics/autodevops/customize.html#application-secret-variables
+
+### Cron jobs
+
+TODO
+
+### Deploying with other terraform providers
+
+- only providers in terraform registry are supported
+- make sure You have environment variable properly configured
 
 ## Unlocking gitlab managed terraform state
 
