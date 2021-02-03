@@ -12,6 +12,9 @@ resource "kubernetes_ingress" "main" {
 
       "certmanager.k8s.io/cluster-issuer"        = "letsencrypt"
       "nginx.ingress.kubernetes.io/ssl-redirect" = "false"
+
+# Ingress shim config https://cert-manager.io/docs/usage/ingress/#optional-configuration
+      "kubernetes.io/tls-acme" = "true"
       # "nginx.ingress.kubernetes.io/proxy-body-size" = "50m"
       # "nginx.ingress.kubernetes.io/enable-cors"     = "true"
     }
