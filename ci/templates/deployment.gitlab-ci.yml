@@ -36,7 +36,7 @@ stages:
     - export TF_VAR_ci_environment_slug=${CI_ENVIRONMENT_SLUG}
     - export TF_VAR_ci_environment_name=${CI_ENVIRONMENT_NAME}
     - export TF_VAR_ci_environment_url=${CI_ENVIRONMENT_URL}
-    - env
+    # - env
     # - env | sed -re 's/(.+)=(.*)/\L\1=\2/g' > variables.tfvars
     # - cat variables.tfvars
 
@@ -99,7 +99,7 @@ deploy:
       when: on_success
     - when: never
   script:
-    - env
+    # - env
     - echo $TF_DEPLOY_VARIABLES # testing purposes
     - echo $TF_DEPLOY_VARIABLES > terraform.tfvars.json
     - gitlab-terraform init
