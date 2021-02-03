@@ -90,6 +90,7 @@ deploy:
   stage: deploy
   dependencies:
     - tf-variables
+  interruptible: false
   environment:
     name: $ENVIRONMENT_NAME
     url: https://${ENVIRONMENT_SUBDOMAIN}.${KUBE_INGRESS_BASE_DOMAIN}
