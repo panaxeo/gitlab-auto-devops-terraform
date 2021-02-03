@@ -1,6 +1,6 @@
 resource "kubernetes_cron_job" "main" {
   metadata {
-    name      = locals.name
+    name      = local.name
     namespace = var.gitlab.kube_namespace
     annotations = {
       "app.gitlab.com/app" = var.gitlab.ci_project_path_slug
