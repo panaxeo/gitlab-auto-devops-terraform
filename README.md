@@ -79,14 +79,15 @@ For full example see [Full examples section](./docs/full-examples.md)
 
 ### Handling secrets
 
-Using K8S_SECRET prefix for environment variables. More info here:
+Using `K8S_SECRET` prefix is supported in similar fasion as in Gitlab autodevops (using environment variables). You can find more information here:
 [Secret docs](./docs/secrets.md)
 
 ### Cron jobs
 
-TODO
+Terraform module for easily creaing kubernetes cronjob is prepared under `gitlab-cron-job`. You can find more information here:
+[Cron jobs docs](./docs/cron-jobs.md)
 
 ### Deploying with other terraform providers
 
-- only providers in terraform registry are supported
-- make sure You have environment variable properly configured
+- only providers in terraform registry are supported as they are downloaded adhoc
+- make sure You have each provider properly configured (ideally using environment variables)
