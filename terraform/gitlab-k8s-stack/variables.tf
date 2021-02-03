@@ -29,7 +29,7 @@ variable "container_port" {
 }
 variable "hostname" {
   type    = string
-  default = null
+  default = ""
 }
 variable "env" {
   type = list(object({
