@@ -4,10 +4,25 @@ Gitlab Autodevops features offers great set of tools to automate deployment and 
 
 # Getting started
 
+### Kubernetes cluster setup
+
+This project aims to support default kubernetes installation so all You need to do is register cluster to gitlab by following standard process described at [Gitlab kubernetes clusters docs](https://docs.gitlab.com/ee/user/project/clusters/add_remove_clusters.html#create-new-cluster).
+
+Please note that for exposing the running services You need to install Gitlab managed apps:
+
+- ingress controller
+- cert-manager
+
+You can also install Your own ingress controller as using Gitlab approach creates load balancer which may incur additional costs
+
+_Note: Gitlab managed apps can be installed using UI in cluster management or using cluster management project. You can find more information at [Gitlab Managed Apps docs](https://docs.gitlab.com/ee/user/clusters/applications.html)_
+
+### Project setup
+
 Before You get started with the deployment, there are few steps that You need to go through to prepare Your gitlab projects for deployment:
 
 1. create gitlab project
-1. create deploy token with name `gitlab-deploy-token` and read registry permissions
+1. create deploy token with name `gitlab-deploy-token` and read registry permissions (Settings > Repository > Deploy tokens)
 1. push `.gitlab-ci.yml` file with content (see Pipeline configuration)[#pipeline-configuration]
 1. (optional) create `Dockerfile` to enable build job which creates docker image and push image to gitlab registry
 1. create `deployment` folder to enable deployment jobs which will trigger terraform deployment. For more information see [Terraform deployments](#terraform-deployments)
@@ -60,12 +75,12 @@ module "k8s-app" {
 
 ```
 
-_Note: configured cluster with gitlab integration is required for the deployment to work. To get more information about registering Kubernetes cluster please see [Gitlab kubernetes clusters docs](https://docs.gitlab.com/ee/user/project/clusters/add_remove_clusters.html#create-new-cluster)_
+For full example see [Full examples section](./docs/full-examples.md)
 
 ### Handling secrets
 
 Using K8S_SECRET prefix for environment variables. More info here:
-https://docs.gitlab.com/ee/topics/autodevops/customize.html#application-secret-variables
+[Secret docs](./docs/secrets.md)
 
 ### Cron jobs
 
