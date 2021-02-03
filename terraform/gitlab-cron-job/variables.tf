@@ -4,30 +4,33 @@ variable "gitlab" {
     ci_project_name      = string
     ci_project_path_slug = string
     ci_environment_slug  = string
-    ci_environment_url   = string
     ci_registry_image    = string
     ci_commit_short_sha  = string
     kube_namespace       = string
   })
 }
 
-variable "name" {
-  default = ""
-}
-
-variable "container_name" {
-  default = "auto-deploy-app"
-}
-variable "container_image" {
-  default = ""
-}
-variable "container_port" {
-  default = 80
-}
-variable "hostname" {
+variable "namespace" {
   type    = string
   default = ""
 }
+variable "name" {
+  type    = string
+  default = ""
+}
+variable "schedule" {}
+variable "container_image" {
+  default = ""
+}
+variable "container_name" {
+  default = "main"
+}
+variable "container_command" {
+  default = null
+  type    = list(string)
+}
+
+
 variable "env" {
   type = list(object({
     name  = string
@@ -66,23 +69,4 @@ variable "resources" {
     }
   }
   description = "Container resources requests/limits configuration"
-}
-
-variable "liveness_probe" {
-  type = object({
-    path = string
-  })
-  default = {
-    path = "/healthcheck"
-  }
-  description = "Liveliness probe configuration"
-}
-variable "readiness_probe" {
-  type = object({
-    path = string
-  })
-  default = {
-    path = "/healthcheck"
-  }
-  description = "Readiness probe configuration"
 }
