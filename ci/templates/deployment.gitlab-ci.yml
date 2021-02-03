@@ -110,8 +110,6 @@ stop:
   extends:
     - .terraform-base
   stage: cleanup
-  variables:
-    GIT_STRATEGY: none
   allow_failure: true
   needs:
     - deploy
