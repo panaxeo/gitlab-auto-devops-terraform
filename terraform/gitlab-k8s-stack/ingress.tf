@@ -10,10 +10,10 @@ resource "kubernetes_ingress" "main" {
       "nginx.ingress.kubernetes.io/rewrite-target" = "/$1"
       "nginx.ingress.kubernetes.io/use-regex"      = "true"
 
-      # "certmanager.k8s.io/cluster-issuer"        = "letsencrypt"
+      "certmanager.k8s.io/cluster-issuer"        = "letsencrypt"
       "nginx.ingress.kubernetes.io/ssl-redirect" = "false"
 
-# Ingress shim config https://cert-manager.io/docs/usage/ingress/#optional-configuration
+      # Ingress shim config https://cert-manager.io/docs/usage/ingress/#optional-configuration
       "kubernetes.io/tls-acme" = "true"
       # "nginx.ingress.kubernetes.io/proxy-body-size" = "50m"
       # "nginx.ingress.kubernetes.io/enable-cors"     = "true"
