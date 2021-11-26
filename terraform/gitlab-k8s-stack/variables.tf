@@ -86,3 +86,22 @@ variable "readiness_probe" {
   }
   description = "Readiness probe configuration"
 }
+
+variable "persistent_volume" {
+  type = object({
+    path = string
+    size = string
+    storage_class_name = string
+  })
+  default = null
+  description = "Configuration for persistent storage"
+}
+
+variable "security_context" {
+  type = object({
+    allow_privilege_escalation = bool
+    run_as_user = number
+  })
+  default = null
+  description = "Security context for app container (https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#securitycontext-v1-core)"
+}

@@ -1,22 +1,3 @@
-resource "kubernetes_service" "main" {
-  metadata {
-    name      = local.name
-    namespace = var.gitlab.kube_namespace
-  }
-
-  spec {
-    selector = {
-      name      = local.name
-      namespace = var.gitlab.kube_namespace
-    }
-
-    port {
-      port        = 80
-      target_port = var.container_port
-    }
-  }
-}
-
 resource "kubernetes_deployment" "main" {
   metadata {
     name      = local.name
@@ -27,7 +8,7 @@ resource "kubernetes_deployment" "main" {
     }
   }
 
-  wait_for_rollout = true
+  wait_for_rollout = true 
 
   spec {
     selector {
@@ -58,6 +39,14 @@ resource "kubernetes_deployment" "main" {
             container_port = var.container_port
           }
 
+          dynamic "security_context" {
+            for_each = var.security_context == null ? [] : [1]
+            content {
+              allow_privilege_escalation = var.security_context.allow_privilege_escalation
+              run_as_user = var.security_context.run_as_user
+            }
+          }
+
           dynamic "env" {
             for_each = var.env
             content {
@@ -85,7 +74,7 @@ resource "kubernetes_deployment" "main" {
               port = var.container_port
             }
 
-            initial_delay_seconds = "10"
+            initial_delay_seconds = "60"
             period_seconds        = "10"
           }
 
@@ -95,7 +84,7 @@ resource "kubernetes_deployment" "main" {
               port = var.container_port
             }
 
-            initial_delay_seconds = "10"
+            initial_delay_seconds = "60"
             period_seconds        = "10"
           }
 
@@ -108,6 +97,24 @@ resource "kubernetes_deployment" "main" {
             limits {
               cpu    = var.resources.limits.cpu
               memory = var.resources.limits.memory
+            }
+          }
+
+          dynamic "volume_mount" {
+            for_each = var.persistent_volume == null ? [] : [1]
+            content {
+              name = local.name
+              mount_path = var.persistent_volume.path
+            }
+          }
+        }
+
+        dynamic "volume" {
+          for_each = var.persistent_volume == null ? [] : [1]
+          content {
+            name = local.name
+            persistent_volume_claim {
+              claim_name = local.name
             }
           }
         }
